@@ -6,7 +6,7 @@ python:
   - "3.6"
 install:
   - pip install -U pip
-  - pip install .[test,qa] wheel
+  - pip install -U .[test,qa] wheel
 script:
   - pytest
   - flake8 frontmark
