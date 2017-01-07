@@ -1,5 +1,12 @@
 # Pelican FrontMark
 
+[![Build Status](https://travis-ci.org/noirbizarre/pelican-frontmark.svg?branch=master)](https://travis-ci.org/noirbizarre/pelican-frontmark)
+[![Coverage Status](https://coveralls.io/repos/github/noirbizarre/pelican-frontmark/badge.svg?branch=master)](https://coveralls.io/github/noirbizarre/pelican-frontmark?branch=master)
+![License](https://img.shields.io/pypi/l/pelican-frontmark.svg)
+![Format](https://img.shields.io/pypi/format/pelican-frontmark.svg)
+![Supported versions](https://img.shields.io/pypi/pyversions/pelican-frontmark.svg)
+
+
 A Pelican CommonMark/Front Matter reader.
 
 This reader marse Markdown files with YAML frontmatter headers and formatted using the CommonMark specifications.

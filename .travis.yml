@@ -6,8 +6,10 @@ python:
   - "3.6"
 install:
   - pip install -U pip
-  - pip install -U .[test,qa] wheel
+  - pip install -U .[test,qa] wheel python-coveralls
 script:
   - pytest
   - flake8 frontmark
   - python setup.py bdist_wheel
+after_success:
+  - coveralls
