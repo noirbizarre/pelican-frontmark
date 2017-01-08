@@ -25,7 +25,7 @@ RE_TITLE = re.compile(r'^(?P<level>#+)\s*(?P<title>.*)$', re.M)
 RE_IMAGE = re.compile(r'\!\[(?P<text>.*?)\]\((?P<url>.*?)\)')
 RE_CODE = re.compile(r'``([^<>]*?)``')
 
-GITHUB_REPOSITORY = 'https://github.com/noirbizarre/frontmark'
+GITHUB_REPOSITORY = 'https://github.com/noirbizarre/pelican-frontmark'
 
 RST_TITLE_LEVELS = ['=', '-', '*']
 
