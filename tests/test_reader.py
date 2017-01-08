@@ -1,6 +1,6 @@
 import os
 
-from pelican import readers
+from pelican import readers, Pelican
 from pelican.settings import DEFAULT_CONFIG
 from pelican.utils import SafeDatetime
 
@@ -111,6 +111,11 @@ def test_custom_types():
     assert metadata['custom'] == 'TEST'
 
 
-def test_wron_custom_type_warn_only():
+def test_wrong_custom_type_warn_only():
     with frontmark_yaml_register.connected_to(lambda r: 'missing arg'):
         read_content_metadata('page.md')
+
+
+def test_pelican_registeration():
+    settings = get_settings(PLUGINS=['frontmark'])
+    p = Pelican(settings)
