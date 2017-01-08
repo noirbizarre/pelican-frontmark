@@ -1,5 +1,5 @@
 # Changelog
 
-## Current
+## In development
 
 - Initial release
