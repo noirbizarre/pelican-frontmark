@@ -1,5 +1,9 @@
 # Changelog
 
+## In development
+
+- Nothing yet
+
 ## 1.0.1 (2017-01-08)
 
 - Test and fix plugin registeration
