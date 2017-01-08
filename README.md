@@ -92,10 +92,10 @@ def register():
     frontmark_yaml_register.connected(register_upper):
 ```
 
-[travis-badge]: https://travis-ci.org/noirbizarre/pelican-frontmark.svg?branch=master
+[travis-badge]: https://travis-ci.org/noirbizarre/pelican-frontmark.svg?tag=1.0.1
 [travis-badge-url]: https://travis-ci.org/noirbizarre/pelican-frontmark
-[coveralls-badge]: https://coveralls.io/repos/github/noirbizarre/pelican-frontmark/badge.svg?branch=master
-[coveralls-badge-url]: https://coveralls.io/github/noirbizarre/pelican-frontmark?branch=master
+[coveralls-badge]: https://coveralls.io/repos/github/noirbizarre/pelican-frontmark/badge.svg?tag=1.0.1
+[coveralls-badge-url]: https://coveralls.io/github/noirbizarre/pelican-frontmark?tag=1.0.1
 [license-badge]: https://img.shields.io/pypi/l/pelican-frontmark.svg
 [license-badge-url]: https://pypi.python.org/pypi/pelican-frontmark
 [format-badge]: https://img.shields.io/pypi/format/pelican-frontmark.svg
