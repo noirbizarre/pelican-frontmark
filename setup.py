@@ -25,9 +25,7 @@ RE_TITLE = re.compile(r'^(?P<level>#+)\s*(?P<title>.*)$', re.M)
 RE_IMAGE = re.compile(r'\!\[(?P<text>.*?)\]\((?P<url>.*?)\)')
 RE_CODE = re.compile(r'``([^<>]*?)``')
 
-GITHUB_REPOSITORY = 'https://github.com/apihackers/wagtail-sendinblue'
-
-BADGES_TO_KEEP = ['gitter-badge']
+GITHUB_REPOSITORY = 'https://github.com/noirbizarre/frontmark'
 
 RST_TITLE_LEVELS = ['=', '-', '*']
 
@@ -60,14 +58,10 @@ def md2pypi(filename):
     content = RE_LINK_TO_URL.sub('`\g<text> <\g<url>>`_', content)
 
     for match in RE_BADGE.finditer(content):
-        if match.group('badge') not in BADGES_TO_KEEP:
-            content = content.replace(match.group(0), '')
-        else:
-            params = match.groupdict()
-            params['badge'] = refs[match.group('badge')]
-            params['target'] = refs[match.group('target')]
-            content = content.replace(match.group(0),
-                                      RST_BADGE.format(**params))
+        params = match.groupdict()
+        params['badge'] = refs[match.group('badge')]
+        params['target'] = refs[match.group('target')]
+        content = content.replace(match.group(0), RST_BADGE.format(**params))
 
     for match in RE_IMAGE.finditer(content):
         url = match.group('url')

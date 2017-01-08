@@ -1,10 +1,10 @@
 # Pelican FrontMark
 
-[![Build Status](https://travis-ci.org/noirbizarre/pelican-frontmark.svg?branch=master)](https://travis-ci.org/noirbizarre/pelican-frontmark)
-[![Coverage Status](https://coveralls.io/repos/github/noirbizarre/pelican-frontmark/badge.svg?branch=master)](https://coveralls.io/github/noirbizarre/pelican-frontmark?branch=master)
-![License](https://img.shields.io/pypi/l/pelican-frontmark.svg)
-![Format](https://img.shields.io/pypi/format/pelican-frontmark.svg)
-![Supported versions](https://img.shields.io/pypi/pyversions/pelican-frontmark.svg)
+[![Build Status][travis-badge]][travis-badge-url]
+[![Coverage Status][coveralls-badge]][coveralls-badge-url]
+[![License][license-badge]][license-badge-url]
+[![Format][format-badge]][format-badge-url]
+[![Supported versions][python-version-badge]][python-version-badge-url]
 
 
 A Pelican CommonMark/Front Matter reader.
@@ -69,7 +69,7 @@ My article content
 
 ### Settings
 
-- `FRONTMARK_PARSE_LITERAL`: `True` by default. Set it to `False` if you don't want multiline string literals (`|`)
+- **`FRONTMARK_PARSE_LITERAL`**: `True` by default. Set it to `False` if you don't want multiline string literals (`|`)
   to be parsed as markdown.
 
 ### Registering custom YAML types
@@ -91,3 +91,14 @@ def register_upper(reader):
 def register():
     frontmark_yaml_register.connected(register_upper):
 ```
+
+[travis-badge]: https://travis-ci.org/noirbizarre/pelican-frontmark.svg?branch=master
+[travis-badge-url]: https://travis-ci.org/noirbizarre/pelican-frontmark
+[coveralls-badge]: https://coveralls.io/repos/github/noirbizarre/pelican-frontmark/badge.svg?branch=master
+[coveralls-badge-url]: https://coveralls.io/github/noirbizarre/pelican-frontmark?branch=master
+[license-badge]: https://img.shields.io/pypi/l/pelican-frontmark.svg
+[license-badge-url]: https://pypi.python.org/pypi/pelican-frontmark
+[format-badge]: https://img.shields.io/pypi/format/pelican-frontmark.svg
+[format-badge-url]: https://pypi.python.org/pypi/pelican-frontmark
+[python-version-badge]: https://img.shields.io/pypi/pyversions/pelican-frontmark.svg
+[python-version-badge-url]: https://pypi.python.org/pypi/pelican-frontmark
