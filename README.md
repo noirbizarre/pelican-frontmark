@@ -92,6 +92,28 @@ def register():
     frontmark_yaml_register.connected(register_upper):
 ```
 
+## Testing
+
+To test the plugin against all supported Python versions, run tox:
+
+```shell
+tox
+```
+
+To test only within your current Python version with pytest:
+
+```shell
+pip install -e .[test]  # Install with test dependencies
+pytest  # Launch pytest test suite
+```
+
+or let setuptools do the job:
+
+```shell
+python setup.py test
+```
+
+
 [travis-badge]: https://travis-ci.org/noirbizarre/pelican-frontmark.svg?branch=master
 [travis-badge-url]: https://travis-ci.org/noirbizarre/pelican-frontmark
 [coveralls-badge]: https://coveralls.io/repos/github/noirbizarre/pelican-frontmark/badge.svg?branch=master
