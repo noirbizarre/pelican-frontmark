@@ -118,4 +118,4 @@ def test_wrong_custom_type_warn_only():
 
 def test_pelican_registeration():
     settings = get_settings(PLUGINS=['frontmark'])
-    p = Pelican(settings)
+    Pelican(settings)
