@@ -3,6 +3,7 @@
 ## In development
 
 - Added `FRONTMARK_PYGMENTS` optionnal setting for Pygments rendering
+- Fix links handling (ie. `{filename}`...)
 
 ## 1.0.1 (2017-01-08)
 

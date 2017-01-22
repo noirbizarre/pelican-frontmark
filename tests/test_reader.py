@@ -141,6 +141,32 @@ def test_hr():
     assert '<hr/>' in content.replace(' ', '')
 
 
+def test_links_in_anchors():
+    content, _ = read_content_metadata('links.md')
+    anchors = pq(content).find('a')
+    expected = (
+        '{filename}/article.md',
+        '{attach}/file.pdf',
+        '{index}',
+        '{author}/author',
+        '{category}/category',
+        '{tag}/tag',
+    )
+    for a, expected in zip(anchors.items(), expected):
+        assert a.attr.href == expected
+
+
+def test_filename_in_images():
+    content, _ = read_content_metadata('links.md')
+    imgs = pq(content).find('img')
+    expected = (
+        '{filename}/image.png',
+        '{attach}/image.png',
+    )
+    for img, expected in zip(imgs.items(), expected):
+        assert img.attr.src == expected
+
+
 def test_markdown_only_with_hr_start():
     content, metadata = read_content_metadata('hr-start.md')
     assert metadata == {}

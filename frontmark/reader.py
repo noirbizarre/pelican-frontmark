@@ -4,6 +4,8 @@ import re
 
 try:
     import CommonMark
+    from CommonMark.common import escape_xml
+    from CommonMark.render.html import potentially_unsafe
 except ImportError:  # pragma: no cover
     CommonMark = False
 
@@ -28,11 +30,16 @@ DELIMITER = '---'
 BOUNDARY = re.compile(r'^{0}$'.format(DELIMITER), re.MULTILINE)
 STR_TAG = 'tag:yaml.org,2002:str'
 
+INTERNAL_LINK = re.compile(r'^%7B(\w+)%7D')
+
 
 class HtmlRenderer(CommonMark.HtmlRenderer):
     '''
     An altered CommonMark HTML rendered taking reader settings in account.
     '''
+
+    linkable_tags = ('a', 'img')
+    linkable_attrs = ('href', 'src')
 
     def __init__(self, reader):
         self.reader = reader
@@ -47,6 +54,44 @@ class HtmlRenderer(CommonMark.HtmlRenderer):
         if isinstance(self.reader.pygments_options, dict):
             return self.reader.pygments_options
         return {}
+
+    def tag(self, name, attrs=None, selfclosing=None):
+        """Helper function to produce an HTML tag."""
+        if self.disable_tags > 0:
+            return
+
+        if name in self.linkable_tags and attrs and len(attrs) > 0:
+            for attrib in attrs:
+                if attrib[0] in self.linkable_attrs:
+                    attrib[1] = INTERNAL_LINK.sub('{\g<1>}', attrib[1])
+
+        super().tag(name, attrs, selfclosing)
+
+    def escape(self, text, preserve_entities):
+        escaped = escape_xml(text, preserve_entities)
+        return INTERNAL_LINK.sub('{\g<1>}', escaped)
+
+    def image(self, node, entering):
+        '''
+        Copy-pasted from upstream class until
+        https://github.com/rtfd/CommonMark-py/pull/90 is merged
+        '''
+        if entering:
+            if self.disable_tags == 0:
+                if self.options.get('safe') and \
+                   potentially_unsafe(node.destination):
+                    self.lit('<img src="" alt="')
+                else:
+                    self.lit('<img src="' +
+                             self.escape(node.destination, True) +
+                             '" alt="')
+            self.disable_tags += 1
+        else:
+            self.disable_tags -= 1
+            if self.disable_tags == 0:
+                if node.title:
+                    self.lit('" title="' + self.escape(node.title, True))
+                self.lit('" />')
 
     def code_block(self, node, entering):
         '''Output Pygments if required else use default html5 output'''
