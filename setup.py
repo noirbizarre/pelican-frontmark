@@ -107,7 +107,7 @@ needs_pytest = {'pytest', 'test', 'ptr'}.intersection(sys.argv)
 
 install_requires = ['pelican>=3.7.0', 'pyyaml', 'commonmark']
 setup_requires = ['pytest-runner'] if needs_pytest else []
-tests_require = ['pytest']
+tests_require = ['pytest', 'pyquery']
 qa_require = ['pytest-cov', 'flake8']
 
 

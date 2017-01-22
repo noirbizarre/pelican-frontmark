@@ -7,6 +7,7 @@ from pelican.utils import SafeDatetime
 from frontmark.reader import FrontmarkReader
 from frontmark.signals import frontmark_yaml_register
 
+from pyquery import PyQuery as pq
 
 TEST_DIR = os.path.dirname(__file__)
 DATA_PATH = os.path.join(TEST_DIR, 'data')
@@ -88,6 +89,51 @@ def test_multiline_rendering_disabled():
         'notrendered': 'This shouldn\'t be rendered\n',
         'markdown': '<p>This should be rendered</p>',
     })
+
+
+def test_default_syntax_highlighting_html5():
+    '''Output standard pre>code block with language class by default'''
+    content, _ = read_content_metadata('highlight.md')
+    pre = pq(content)
+    assert pre.length == 1
+    assert pre.is_('pre')
+    code = pre.children()
+    assert code.length == 1
+    assert code.is_('code')
+    assert code.has_class('language-python')
+    assert code.text() == 'print(\'Hello Frontmark\')'
+
+
+def test_syntax_highlighting_pygments():
+    '''Output Pygments rendered div.highlight>code block'''
+    content, _ = read_content_metadata('highlight.md', FRONTMARK_PYGMENTS=True)
+    div = pq(content)
+    assert div.length == 1
+    assert div.is_('div')
+    assert div.has_class('highlight')
+    pre = div.children()
+    assert pre.length == 1
+    assert pre.is_('pre')
+
+
+def test_syntax_highlighting_pygments_options():
+    '''Pass FRONTMARK_PYGMENTS options to Pygments'''
+    content, _ = read_content_metadata('highlight.md', FRONTMARK_PYGMENTS={
+        'linenos': 'inline',
+    })
+    assert pq(content).find('.lineno').length > 0
+
+
+def test_syntax_highlighting_pygments_unknown_language():
+    '''Pygments should not fail on unkown language'''
+    content, _ = read_content_metadata('highlight-unknown.md', FRONTMARK_PYGMENTS=True)
+    div = pq(content)
+    assert div.length == 1
+    assert div.is_('div')
+    assert div.has_class('highlight')
+    pre = div.children()
+    assert pre.length == 1
+    assert pre.is_('pre')
 
 
 def test_hr():

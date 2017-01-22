@@ -67,10 +67,31 @@ My article content
 
 ## Advanced configuration
 
+### Syntax highlighting
+
+By default, `FrontMark` outputs code blocks in a standard html5 way,
+ie. a `pre>code` block with a language class.
+This allow to use any html5 syntax highlight JavaScript lib.
+
+You can force Pygments usage to output html4 pre rendered syntax highlight
+by setting `FRONTMARK_PYGMENTS` to `True` for default parameters
+or manually setting it to a dict of Pygments HtmlRenderer parameters.
+
+```python
+FRONTMARK_PYGMENTS = {
+    'linenos': 'inline',
+}
+```
+
 ### Settings
 
 - **`FRONTMARK_PARSE_LITERAL`**: `True` by default. Set it to `False` if you don't want multiline string literals (`|`)
   to be parsed as markdown.
+
+- **`FRONTMARK_PYGMENTS`**: Not defined by default and output standard html5 code blocks.
+  Can be set to `True` to force Pygments usage with default parameters or a `dict` of
+  [Pygments parameters][pygments-options]
+
 
 ### Registering custom YAML types
 
@@ -124,3 +145,4 @@ python setup.py test
 [format-badge-url]: https://pypi.python.org/pypi/pelican-frontmark
 [python-version-badge]: https://img.shields.io/pypi/pyversions/pelican-frontmark.svg
 [python-version-badge-url]: https://pypi.python.org/pypi/pelican-frontmark
+[pygments-options]: http://docs.getpelican.com/en/stable/content.html#internal-pygments-options

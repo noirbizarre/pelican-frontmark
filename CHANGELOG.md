@@ -2,7 +2,7 @@
 
 ## In development
 
-- Nothing yet
+- Added `FRONTMARK_PYGMENTS` optionnal setting for Pygments rendering
 
 ## 1.0.1 (2017-01-08)
 

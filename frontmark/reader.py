@@ -3,9 +3,9 @@ import logging
 import re
 
 try:
-    from CommonMark import commonmark
+    import CommonMark
 except ImportError:  # pragma: no cover
-    commonmark = False
+    CommonMark = False
 
 try:
     import yaml
@@ -14,6 +14,10 @@ except ImportError as e:  # pragma: no cover
 
 from pelican.readers import BaseReader
 from pelican.utils import pelican_open
+
+from pygments import highlight
+from pygments.formatters import HtmlFormatter
+from pygments.lexers import TextLexer, get_lexer_by_name
 
 from .signals import frontmark_yaml_register
 
@@ -25,40 +29,46 @@ BOUNDARY = re.compile(r'^{0}$'.format(DELIMITER), re.MULTILINE)
 STR_TAG = 'tag:yaml.org,2002:str'
 
 
-def markdown_constructor(loader, node):
-    '''Allows to optionnaly parse Markdown in multiline literals'''
-    value = loader.construct_scalar(node)
-    return commonmark(value).strip()
+class HtmlRenderer(CommonMark.HtmlRenderer):
+    '''
+    An altered CommonMark HTML rendered taking reader settings in account.
+    '''
 
+    def __init__(self, reader):
+        self.reader = reader
+        super().__init__()
 
-def multiline_as_markdown_constructor(loader, node):
-    '''Allows to optionnaly parse Markdown in multiline literals'''
-    value = loader.construct_scalar(node)
-    return commonmark(value).strip() if node.style == '|' else value
+    @property
+    def use_pygments(self):
+        return bool(self.reader.pygments_options)
 
+    @property
+    def pygments_options(self):
+        if isinstance(self.reader.pygments_options, dict):
+            return self.reader.pygments_options
+        return {}
 
-def loader_factory(reader):
-    class FrontmarkLoader(yaml.Loader):
-        '''
-        Custom YAML Loader for frontmark
+    def code_block(self, node, entering):
+        '''Output Pygments if required else use default html5 output'''
+        if self.use_pygments:
+            self.cr()
+            info_words = node.info.split() if node.info else []
 
-        - Mapping order is respected (wiht OrderedDict)
-        '''
-        def construct_mapping(self, node, deep=False):
-            '''User OrderedDict as default for mappings'''
-            return collections.OrderedDict(self.construct_pairs(node))
+            if len(info_words) > 0 and len(info_words[0]) > 0:
+                try:
+                    lexer = get_lexer_by_name(info_words[0])
+                except ValueError:
+                    # no lexer found - use the text one instead of an exception
+                    lexer = TextLexer()
+            else:
+                lexer = TextLexer()
 
-    FrontmarkLoader.add_constructor('!md', markdown_constructor)
-    if reader.settings.get('FRONTMARK_PARSE_LITERAL', True):
-        FrontmarkLoader.add_constructor(STR_TAG, multiline_as_markdown_constructor)
-    for _, pair in frontmark_yaml_register.send(reader):
-        if not len(pair) == 2:
-            log.warning('Ignoring YAML type (%s), expected a (tag, handler) tuple', pair)
-            continue
-        tag, constructor = pair
-        FrontmarkLoader.add_constructor(tag, constructor)
-
-    return FrontmarkLoader
+            formatter = HtmlFormatter(**self.pygments_options)
+            parsed = highlight(node.literal, lexer, formatter)
+            self.lit(parsed)
+            self.cr()
+        else:
+            super().code_block(node, entering)
 
 
 class FrontmarkReader(BaseReader):
@@ -66,7 +76,7 @@ class FrontmarkReader(BaseReader):
     Reader for CommonMark Markdown files with YAML metadata
     '''
 
-    enabled = bool(commonmark) and bool(yaml)
+    enabled = bool(CommonMark) and bool(yaml)
     file_extensions = ['md']
 
     def read(self, source_path):
@@ -74,9 +84,9 @@ class FrontmarkReader(BaseReader):
 
         with pelican_open(source_path) as text:
             metadata, content = self._parse(text)
-            # metadata.setdefault('title', '-')
 
-        return commonmark(content).strip(), self._parse_metadata(metadata)
+        content = self._render(content)
+        return content.strip(), self._parse_metadata(metadata)
 
     def _parse(self, text):
         '''
@@ -94,10 +104,10 @@ class FrontmarkReader(BaseReader):
         except ValueError:
             # if we can't split, bail
             return {}, text
-        loader_class = loader_factory(self)
-        metadata = yaml.load(fm, Loader=loader_class)
+        # loader_class = self.loader_factory(self)
+        metadata = yaml.load(fm, Loader=self.loader_class)
         metadata = metadata if (isinstance(metadata, dict)) else {}
-        return metadata, content.strip()
+        return metadata, content
 
     def _parse_metadata(self, meta):
         """Return the dict containing document metadata"""
@@ -107,11 +117,58 @@ class FrontmarkReader(BaseReader):
         for name, value in meta.items():
             name = name.lower()
             if name in formatted_fields:
-                rendered = commonmark(value).strip()
+                rendered = self._render(value).strip()
                 output[name] = self.process_metadata(name, rendered)
             else:
                 output[name] = self.process_metadata(name, value)
         return output
+
+    @property
+    def pygments_options(self):
+        '''Optionnal Pygments options'''
+        return self.settings.get('FRONTMARK_PYGMENTS')
+
+    def _render(self, text):
+        '''Render CommonMark with ettings taken in account'''
+        parser = CommonMark.Parser()
+        ast = parser.parse(text)
+        renderer = HtmlRenderer(self)
+        html = renderer.render(ast)
+        return html
+
+    def yaml_markdown_constructor(self, loader, node):
+        '''Allows to optionnaly parse Markdown in multiline literals'''
+        value = loader.construct_scalar(node)
+        return self._render(value).strip()
+
+    def yaml_multiline_as_markdown_constructor(self, loader, node):
+        '''Allows to optionnaly parse Markdown in multiline literals'''
+        value = loader.construct_scalar(node)
+        return self._render(value).strip() if node.style == '|' else value
+
+    @property
+    def loader_class(self):
+        class FrontmarkLoader(yaml.Loader):
+            '''
+            Custom YAML Loader for frontmark
+
+            - Mapping order is respected (wiht OrderedDict)
+            '''
+            def construct_mapping(self, node, deep=False):
+                '''User OrderedDict as default for mappings'''
+                return collections.OrderedDict(self.construct_pairs(node))
+
+        FrontmarkLoader.add_constructor('!md', self.yaml_markdown_constructor)
+        if self.settings.get('FRONTMARK_PARSE_LITERAL', True):
+            FrontmarkLoader.add_constructor(STR_TAG, self.yaml_multiline_as_markdown_constructor)
+        for _, pair in frontmark_yaml_register.send(self):
+            if not len(pair) == 2:
+                log.warning('Ignoring YAML type (%s), expected a (tag, handler) tuple', pair)
+                continue
+            tag, constructor = pair
+            FrontmarkLoader.add_constructor(tag, constructor)
+
+        return FrontmarkLoader
 
 
 def add_reader(readers):  # pragma: no cover
