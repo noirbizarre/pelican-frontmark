@@ -1,5 +1,9 @@
 # Changelog
 
+## In development
+
+- Nothing yet
+
 ## 1.2.0 (2018-09-08)
 
 - Upgrade to CommonMark 0.8+
