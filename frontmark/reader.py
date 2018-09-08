@@ -3,11 +3,11 @@ import logging
 import re
 
 try:
-    import CommonMark
-    from CommonMark.common import escape_xml
-    from CommonMark.render.html import potentially_unsafe
+    import commonmark
+    from commonmark.common import escape_xml
+    from commonmark.render.html import potentially_unsafe
 except ImportError:  # pragma: no cover
-    CommonMark = False
+    commonmark = False
 
 try:
     import yaml
@@ -33,7 +33,7 @@ STR_TAG = 'tag:yaml.org,2002:str'
 INTERNAL_LINK = re.compile(r'^%7B(\w+)%7D')
 
 
-class HtmlRenderer(CommonMark.HtmlRenderer):
+class HtmlRenderer(commonmark.HtmlRenderer):
     '''
     An altered CommonMark HTML rendered taking reader settings in account.
     '''
@@ -121,7 +121,7 @@ class FrontmarkReader(BaseReader):
     Reader for CommonMark Markdown files with YAML metadata
     '''
 
-    enabled = bool(CommonMark) and bool(yaml)
+    enabled = bool(commonmark) and bool(yaml)
     file_extensions = ['md']
 
     def read(self, source_path):
