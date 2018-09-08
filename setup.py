@@ -105,7 +105,7 @@ exec(compile(open('frontmark/__about__.py').read(), 'frontmark/__about__.py', 'e
 
 needs_pytest = {'pytest', 'test', 'ptr'}.intersection(sys.argv)
 
-install_requires = ['pelican>=3.7.0', 'pyyaml', 'commonmark']
+install_requires = ['pelican>=3.7.0', 'pyyaml', 'commonmark>=0.8.0']
 setup_requires = ['pytest-runner'] if needs_pytest else []
 tests_require = ['pytest', 'pyquery']
 qa_require = ['pytest-cov', 'flake8']
@@ -120,6 +120,7 @@ setup(
     author='Axel Haustant',
     author_email='noirbizarre+github@gmail.com',
     packages=find_packages(),
+    python_requires='>=3.5'
     include_package_data=True,
     install_requires=install_requires,
     setup_requires=setup_requires,
@@ -139,10 +140,9 @@ setup(
         'Topic :: System :: Software Distribution',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'License :: OSI Approved :: MIT License',
     ],
