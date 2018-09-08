@@ -175,7 +175,7 @@ class FrontmarkReader(BaseReader):
 
     def _render(self, text):
         '''Render CommonMark with ettings taken in account'''
-        parser = CommonMark.Parser()
+        parser = commonmark.Parser()
         ast = parser.parse(text)
         renderer = HtmlRenderer(self)
         html = renderer.render(ast)
