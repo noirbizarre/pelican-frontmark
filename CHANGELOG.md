@@ -1,6 +1,6 @@
 # Changelog
 
-## In development
+## 1.2.0 (2018-09-08)
 
 - Upgrade to CommonMark 0.8+
 - Drop support for Python version prior to 3.5
