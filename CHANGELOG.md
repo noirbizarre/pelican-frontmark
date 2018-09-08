@@ -2,7 +2,8 @@
 
 ## In development
 
-- Nothing yet
+- Upgrade to CommonMark 0.8+
+- Drop support for Python version prior to 3.5
 
 ## 1.1.0 (2017-01-22)
 
