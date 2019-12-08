@@ -11,7 +11,7 @@ except ImportError:  # pragma: no cover
 
 try:
     import yaml
-except ImportError as e:  # pragma: no cover
+except ImportError:  # pragma: no cover
     yaml = False
 
 from pelican.readers import BaseReader
@@ -63,13 +63,13 @@ class HtmlRenderer(commonmark.HtmlRenderer):
         if name in self.linkable_tags and attrs and len(attrs) > 0:
             for attrib in attrs:
                 if attrib[0] in self.linkable_attrs:
-                    attrib[1] = INTERNAL_LINK.sub('{\g<1>}', attrib[1])
+                    attrib[1] = INTERNAL_LINK.sub(r'{\g<1>}', attrib[1])
 
         super().tag(name, attrs, selfclosing)
 
-    def escape(self, text, preserve_entities):
-        escaped = escape_xml(text, preserve_entities)
-        return INTERNAL_LINK.sub('{\g<1>}', escaped)
+    def escape(self, text):
+        escaped = escape_xml(text)
+        return INTERNAL_LINK.sub(r'{\g<1>}', escaped)
 
     def image(self, node, entering):
         '''
@@ -83,14 +83,14 @@ class HtmlRenderer(commonmark.HtmlRenderer):
                     self.lit('<img src="" alt="')
                 else:
                     self.lit('<img src="' +
-                             self.escape(node.destination, True) +
+                             self.escape(node.destination) +
                              '" alt="')
             self.disable_tags += 1
         else:
             self.disable_tags -= 1
             if self.disable_tags == 0:
                 if node.title:
-                    self.lit('" title="' + self.escape(node.title, True))
+                    self.lit('" title="' + self.escape(node.title))
                 self.lit('" />')
 
     def code_block(self, node, entering):

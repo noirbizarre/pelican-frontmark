@@ -105,7 +105,7 @@ exec(compile(open('frontmark/__about__.py').read(), 'frontmark/__about__.py', 'e
 
 needs_pytest = {'pytest', 'test', 'ptr'}.intersection(sys.argv)
 
-install_requires = ['pelican>=3.7.0', 'pyyaml', 'commonmark>=0.8.0']
+install_requires = ['pelican>=3.7.0', 'pyyaml', 'commonmark>=0.9.1']
 setup_requires = ['pytest-runner'] if needs_pytest else []
 tests_require = ['pytest', 'pyquery']
 qa_require = ['pytest-cov', 'flake8']

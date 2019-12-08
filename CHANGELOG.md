@@ -2,7 +2,7 @@
 
 ## In development
 
-- Nothing yet
+- Support CommonMark 0.9.1
 
 ## 1.2.0 (2018-09-08)
 
