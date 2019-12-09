@@ -1,5 +1,9 @@
 # Changelog
 
+## In development
+
+- Nothing yet
+
 ## 1.2.1 (2019-12-09)
 
 - Support CommonMark 0.9.1
