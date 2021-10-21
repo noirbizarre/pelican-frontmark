@@ -1,0 +1,148 @@
+[project]
+# PEP 621 project metadata
+# See https://www.python.org/dev/peps/pep-0621/
+authors = [
+    {name = "Axel Haustant", email = "noirbizarre@gmail.com"},
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.7"
+dependencies = [
+    "pelican<5.0,>=4.0",
+    "PyYAML",
+    "commonmark",
+]
+name = "pelican-frontmark"
+version = "1.2.2.dev"
+description = "CommonMark/Frontmatter reader for Pelican"
+
+keywords = ["pelican", "markdown", "frontmatter", "commonmark", "yaml"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Framework :: Pelican",
+    "Framework :: Pelican :: Plugins",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: System :: Software Distribution",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+
+[project.urls]
+Homepage = "https://github.com/noirbizarre/pelican-frontmark"
+
+
+[project.optional-dependencies]
+[build-system]
+requires = ["pdm-pep517>=1.0.0"]
+build-backend = "pdm.pep517.api"
+
+
+[tool.pdm.build]
+includes = [
+    "pelican/plugins/frontmark"
+]
+
+
+[tool.pdm.dev-dependencies]
+lint = [
+    "absolufy-imports",
+    "black",
+    "mypy",
+    "ruff",
+    "types-PyYAML",
+    "types-Pygments",
+    "types-commonmark",
+]
+test = [
+    "pyquery",
+    "pytest",
+    "pytest-cov",
+    "pytest-sugar",
+]
+
+[tool.pdm.scripts]
+lint.help = "Lint all tracked files using pre-commit"
+lint.cmd = "pre-commit run --all-files"
+
+test.help = "Run all tests"
+test.cmd = "pytest"
+
+cover.help = "Run the test suite with coverage"
+cover.composite = [
+  """
+  test
+    --cov=pelican/plugins/frontmark
+    --cov-report=term
+    --cov-report=html:reports/coverage
+    --cov-report=xml:reports/coverage.xml
+    --junitxml=reports/tests.xml
+  """
+]
+
+
+[tool.isort]
+# Maintain compatibility with Black
+profile = "black"
+multi_line_output = 3
+
+# Sort imports within their section independent of the import type
+force_sort_within_sections = true
+
+# Designate "pelican" as separate import section
+known_pelican = "pelican"
+sections = "FUTURE,STDLIB,THIRDPARTY,PELICAN,FIRSTPARTY,LOCALFOLDER"
+
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+norecursedirs = ".git build dist"
+testpaths = [
+  "pelican/plugins/frontmark/",
+  "tests/",
+]
+
+
+[tool.coverage.run]
+source = ["pelican/plugins/frontmark/"]
+branch = true
+omit = [
+  "tests/*",
+]
+
+[tool.ruff]
+line-length = 100
+fix = true
+select = [
+    # Pyflakes
+    "F",
+    # Pycodestyle
+    "E",
+    "W",
+    # isort
+    "I001"
+]
+src = [
+    "pelican/plugins/frontmark",
+    "tests",
+]
+
+[tool.ruff.isort]
+known-third-party = [
+    "pelican",
+    "pytest",
+]
+
+[tool.mypy]
+explicit_package_bases = true
+namespace_packages = true
+ignore_missing_imports = true

@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  pull_request:
+    paths-ignore:
+      - "*.md"
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "*.md"
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone
+        uses: actions/checkout@v3
+
+      - name: Set up Python and PDM
+        uses: pdm-project/setup-pdm@v3
+        with:
+          python-version: "3.10"
+          cache: true
+
+      - name: Lint
+        uses: pre-commit/action@v3.0.0
+
+      - name: Install dependencies
+        run: pdm sync -G test
+
+      - name: Run Tests
+        run: pdm run cover -v --force-sugar --color=yes

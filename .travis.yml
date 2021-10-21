@@ -2,15 +2,18 @@ language: python
 dist: xenial
 sudo: true
 python:
-  - "3.5"
-  - "3.6"
   - "3.7"
+  - "3.8"
+  - "3.9"
+  - "3.10"
+  - "3.11"
 install:
-  - pip install -U pip
-  - pip install -U  -e .[test,qa] wheel python-coveralls coverage
+  - pip install -U pip pdm pre-commit
+  - pdm sync -G:all
+  - pip install -U python-coveralls
 script:
-  - pytest --cov frontmark
-  - flake8 frontmark
-  - python setup.py bdist_wheel
+  - pdm cover
+  - pdm lint
+  - pdm build
 after_success:
   - coveralls

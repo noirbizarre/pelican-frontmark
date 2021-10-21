@@ -14,7 +14,7 @@ This reader marse Markdown files with YAML frontmatter headers and formatted usi
 
 ## Requirements
 
-Pelican FrontMark works with Pelican 3.7+ and Python 3.3+
+Pelican FrontMark works with Pelican 4+ and Python 3.7+
 
 ## Getting started
 
@@ -98,7 +98,7 @@ FRONTMARK_PYGMENTS = {
 You can register custom YAML types using the `frontmark_yaml_register` signal:
 
 ```python
-from frontmark.signals import frontmark_yaml_register
+from pelican.plugins.frontmark.signals import frontmark_yaml_register
 
 
 def upper_constructor(loader, noder):
@@ -124,14 +124,8 @@ tox
 To test only within your current Python version with pytest:
 
 ```shell
-pip install -e .[test]  # Install with test dependencies
-pytest  # Launch pytest test suite
-```
-
-or let setuptools do the job:
-
-```shell
-python setup.py test
+pdm sync -G:all  # Install with test dependencies
+pdm test  # Launch pytest test suite
 ```
 
 

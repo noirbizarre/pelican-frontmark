@@ -7,16 +7,15 @@ try:
     from commonmark.common import escape_xml
     from commonmark.render.html import potentially_unsafe
 except ImportError:  # pragma: no cover
-    commonmark = False
+    commonmark = False  # type: ignore
 
 try:
     import yaml
 except ImportError:  # pragma: no cover
-    yaml = False
+    yaml = False  # type: ignore
 
 from pelican.readers import BaseReader
 from pelican.utils import pelican_open
-
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import TextLexer, get_lexer_by_name
@@ -26,20 +25,20 @@ from .signals import frontmark_yaml_register
 log = logging.getLogger(__name__)
 
 
-DELIMITER = '---'
-BOUNDARY = re.compile(r'^{0}$'.format(DELIMITER), re.MULTILINE)
-STR_TAG = 'tag:yaml.org,2002:str'
+DELIMITER = "---"
+BOUNDARY = re.compile(r"^{0}$".format(DELIMITER), re.MULTILINE)
+STR_TAG = "tag:yaml.org,2002:str"
 
-INTERNAL_LINK = re.compile(r'^%7B(\w+)%7D')
+INTERNAL_LINK = re.compile(r"^%7B(\w+)%7D")
 
 
 class HtmlRenderer(commonmark.HtmlRenderer):
-    '''
+    """
     An altered CommonMark HTML rendered taking reader settings in account.
-    '''
+    """
 
-    linkable_tags = ('a', 'img')
-    linkable_attrs = ('href', 'src')
+    linkable_tags = ("a", "img")
+    linkable_attrs = ("href", "src")
 
     def __init__(self, reader):
         self.reader = reader
@@ -63,28 +62,25 @@ class HtmlRenderer(commonmark.HtmlRenderer):
         if name in self.linkable_tags and attrs and len(attrs) > 0:
             for attrib in attrs:
                 if attrib[0] in self.linkable_attrs:
-                    attrib[1] = INTERNAL_LINK.sub(r'{\g<1>}', attrib[1])
+                    attrib[1] = INTERNAL_LINK.sub(r"{\g<1>}", attrib[1])
 
         super().tag(name, attrs, selfclosing)
 
     def escape(self, text):
         escaped = escape_xml(text)
-        return INTERNAL_LINK.sub(r'{\g<1>}', escaped)
+        return INTERNAL_LINK.sub(r"{\g<1>}", escaped)
 
     def image(self, node, entering):
-        '''
+        """
         Copy-pasted from upstream class until
         https://github.com/rtfd/CommonMark-py/pull/90 is merged
-        '''
+        """
         if entering:
             if self.disable_tags == 0:
-                if self.options.get('safe') and \
-                   potentially_unsafe(node.destination):
+                if self.options.get("safe") and potentially_unsafe(node.destination):
                     self.lit('<img src="" alt="')
                 else:
-                    self.lit('<img src="' +
-                             self.escape(node.destination) +
-                             '" alt="')
+                    self.lit('<img src="' + self.escape(node.destination) + '" alt="')
             self.disable_tags += 1
         else:
             self.disable_tags -= 1
@@ -94,7 +90,7 @@ class HtmlRenderer(commonmark.HtmlRenderer):
                 self.lit('" />')
 
     def code_block(self, node, entering):
-        '''Output Pygments if required else use default html5 output'''
+        """Output Pygments if required else use default html5 output"""
         if self.use_pygments:
             self.cr()
             info_words = node.info.split() if node.info else []
@@ -117,12 +113,12 @@ class HtmlRenderer(commonmark.HtmlRenderer):
 
 
 class FrontmarkReader(BaseReader):
-    '''
+    """
     Reader for CommonMark Markdown files with YAML metadata
-    '''
+    """
 
     enabled = bool(commonmark) and bool(yaml)
-    file_extensions = ['md']
+    file_extensions = ["md"]
 
     def read(self, source_path):
         self._source_path = source_path
@@ -134,10 +130,10 @@ class FrontmarkReader(BaseReader):
         return content.strip(), self._parse_metadata(metadata)
 
     def _parse(self, text):
-        '''
+        """
         Parse text with frontmatter, return metadata and content.
         If frontmatter is not found, returns an empty metadata dictionary and original text content.
-        '''
+        """
         # ensure unicode first
         text = str(text).strip()
 
@@ -156,7 +152,7 @@ class FrontmarkReader(BaseReader):
 
     def _parse_metadata(self, meta):
         """Return the dict containing document metadata"""
-        formatted_fields = self.settings['FORMATTED_FIELDS']
+        formatted_fields = self.settings["FORMATTED_FIELDS"]
 
         output = collections.OrderedDict()
         for name, value in meta.items():
@@ -170,11 +166,11 @@ class FrontmarkReader(BaseReader):
 
     @property
     def pygments_options(self):
-        '''Optionnal Pygments options'''
-        return self.settings.get('FRONTMARK_PYGMENTS')
+        """Optionnal Pygments options"""
+        return self.settings.get("FRONTMARK_PYGMENTS")
 
     def _render(self, text):
-        '''Render CommonMark with ettings taken in account'''
+        """Render CommonMark with ettings taken in account"""
         parser = commonmark.Parser()
         ast = parser.parse(text)
         renderer = HtmlRenderer(self)
@@ -182,33 +178,38 @@ class FrontmarkReader(BaseReader):
         return html
 
     def yaml_markdown_constructor(self, loader, node):
-        '''Allows to optionnaly parse Markdown in multiline literals'''
+        """Allows to optionnaly parse Markdown in multiline literals"""
         value = loader.construct_scalar(node)
         return self._render(value).strip()
 
     def yaml_multiline_as_markdown_constructor(self, loader, node):
-        '''Allows to optionnaly parse Markdown in multiline literals'''
+        """Allows to optionnaly parse Markdown in multiline literals"""
         value = loader.construct_scalar(node)
-        return self._render(value).strip() if node.style == '|' else value
+        return self._render(value).strip() if node.style == "|" else value
 
     @property
     def loader_class(self):
         class FrontmarkLoader(yaml.Loader):
-            '''
+            """
             Custom YAML Loader for frontmark
 
             - Mapping order is respected (wiht OrderedDict)
-            '''
+            """
+
             def construct_mapping(self, node, deep=False):
-                '''User OrderedDict as default for mappings'''
+                """User OrderedDict as default for mappings"""
                 return collections.OrderedDict(self.construct_pairs(node))
 
-        FrontmarkLoader.add_constructor('!md', self.yaml_markdown_constructor)
-        if self.settings.get('FRONTMARK_PARSE_LITERAL', True):
-            FrontmarkLoader.add_constructor(STR_TAG, self.yaml_multiline_as_markdown_constructor)
+        FrontmarkLoader.add_constructor("!md", self.yaml_markdown_constructor)
+        if self.settings.get("FRONTMARK_PARSE_LITERAL", True):
+            FrontmarkLoader.add_constructor(
+                STR_TAG, self.yaml_multiline_as_markdown_constructor
+            )
         for _, pair in frontmark_yaml_register.send(self):
             if not len(pair) == 2:
-                log.warning('Ignoring YAML type (%s), expected a (tag, handler) tuple', pair)
+                log.warning(
+                    "Ignoring YAML type (%s), expected a (tag, handler) tuple", pair
+                )
                 continue
             tag, constructor = pair
             FrontmarkLoader.add_constructor(tag, constructor)

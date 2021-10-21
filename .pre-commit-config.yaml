@@ -1,0 +1,44 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+ci:
+  autoupdate_schedule: weekly
+  autoupdate_commit_msg: 'ci(pre-commit): pre-commit.ci autoupdate'
+  autofix_commit_msg: 'ci(pre-commit): pre-commit.ci autofixes'
+
+
+repos:
+  - # Generic file formatting (not python-specific)
+    repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-json
+      - id: check-toml
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-added-large-files
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+
+  - # Static analysis
+    repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.0.157
+    hooks:
+      - id: ruff
+
+  - # Formatting
+    repo: https://github.com/psf/black
+    rev: 22.10.0
+    hooks:
+      - id: black
+
+  - # Type hinting/checking
+    repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.991
+    hooks:
+      - id: mypy
+        files: ^pelican/plugins/frontmark
+        additional_dependencies:
+          - types-PyYAML
+          - types-Pygments
+          - types-commonmark
