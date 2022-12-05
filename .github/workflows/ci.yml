@@ -21,7 +21,6 @@ jobs:
           - "3.8"
           - "3.9"
           - "3.10"
-          - "3.11"
     steps:
       - name: Clone
         uses: actions/checkout@v3
@@ -32,11 +31,15 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: true
 
-      - name: Lint
-        uses: pre-commit/action@v3.0.0
-
       - name: Install dependencies
         run: pdm sync -G test
 
       - name: Run Tests
         run: pdm run cover -v --force-sugar --color=yes
+
+      - uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: reports/coverage.xml
+          flags: unittests
+          name: Python ${{ matrix.python-version }}
