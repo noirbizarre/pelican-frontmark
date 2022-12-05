@@ -1,11 +1,11 @@
 # Pelican FrontMark
 
-[![Build Status][travis-badge]][travis-badge-url]
-[![Coverage Status][coveralls-badge]][coveralls-badge-url]
+[![CI](https://github.com/noirbizarre/pelican-frontmark/actions/workflows/ci.yml/badge.svg)](https://github.com/noirbizarre/pelican-frontmark/actions/workflows/ci.yml)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/noirbizarre/pelican-frontmark/main.svg)](https://results.pre-commit.ci/latest/github/noirbizarre/pelican-frontmark/main)
+[![codecov](https://codecov.io/gh/noirbizarre/pelican-frontmark/branch/main/graph/badge.svg?token=CQBWEzzG4w)](https://codecov.io/gh/noirbizarre/pelican-frontmark)
 [![License][license-badge]][license-badge-url]
 [![Format][format-badge]][format-badge-url]
 [![Supported versions][python-version-badge]][python-version-badge-url]
-
 
 A Pelican CommonMark/Front Matter reader.
 
@@ -129,10 +129,6 @@ pdm test  # Launch pytest test suite
 ```
 
 
-[travis-badge]: https://travis-ci.org/noirbizarre/pelican-frontmark.svg?branch=master
-[travis-badge-url]: https://travis-ci.org/noirbizarre/pelican-frontmark
-[coveralls-badge]: https://coveralls.io/repos/github/noirbizarre/pelican-frontmark/badge.svg?branch=master
-[coveralls-badge-url]: https://coveralls.io/github/noirbizarre/pelican-frontmark?branch=master
 [license-badge]: https://img.shields.io/pypi/l/pelican-frontmark.svg
 [license-badge-url]: https://pypi.python.org/pypi/pelican-frontmark
 [format-badge]: https://img.shields.io/pypi/format/pelican-frontmark.svg
