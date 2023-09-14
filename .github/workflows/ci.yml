@@ -37,7 +37,7 @@ jobs:
       - name: Run Tests
         run: pdm run cover -v --force-sugar --color=yes
 
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: reports/coverage.xml
