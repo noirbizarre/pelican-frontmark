@@ -4,6 +4,7 @@ import re
 
 try:
     import commonmark
+
     from commonmark.common import escape_xml
     from commonmark.render.html import potentially_unsafe
 except ImportError:  # pragma: no cover
@@ -14,11 +15,12 @@ try:
 except ImportError:  # pragma: no cover
     yaml = False  # type: ignore
 
-from pelican.readers import BaseReader
-from pelican.utils import pelican_open
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import TextLexer, get_lexer_by_name
+
+from pelican.readers import BaseReader
+from pelican.utils import pelican_open
 
 from .signals import frontmark_yaml_register
 
@@ -26,7 +28,7 @@ log = logging.getLogger(__name__)
 
 
 DELIMITER = "---"
-BOUNDARY = re.compile(r"^{0}$".format(DELIMITER), re.MULTILINE)
+BOUNDARY = re.compile(rf"^{DELIMITER}$", re.MULTILINE)
 STR_TAG = "tag:yaml.org,2002:str"
 
 INTERNAL_LINK = re.compile(r"^%7B(\w+)%7D")
@@ -166,7 +168,7 @@ class FrontmarkReader(BaseReader):
 
     @property
     def pygments_options(self):
-        """Optionnal Pygments options"""
+        """Optional Pygments options"""
         return self.settings.get("FRONTMARK_PYGMENTS")
 
     def _render(self, text):
@@ -178,12 +180,12 @@ class FrontmarkReader(BaseReader):
         return html
 
     def yaml_markdown_constructor(self, loader, node):
-        """Allows to optionnaly parse Markdown in multiline literals"""
+        """Allows to optionally parse Markdown in multiline literals"""
         value = loader.construct_scalar(node)
         return self._render(value).strip()
 
     def yaml_multiline_as_markdown_constructor(self, loader, node):
-        """Allows to optionnaly parse Markdown in multiline literals"""
+        """Allows to optionally parse Markdown in multiline literals"""
         value = loader.construct_scalar(node)
         return self._render(value).strip() if node.style == "|" else value
 
@@ -193,7 +195,7 @@ class FrontmarkReader(BaseReader):
             """
             Custom YAML Loader for frontmark
 
-            - Mapping order is respected (wiht OrderedDict)
+            - Mapping order is respected (with OrderedDict)
             """
 
             def construct_mapping(self, node, deep=False):
@@ -202,14 +204,10 @@ class FrontmarkReader(BaseReader):
 
         FrontmarkLoader.add_constructor("!md", self.yaml_markdown_constructor)
         if self.settings.get("FRONTMARK_PARSE_LITERAL", True):
-            FrontmarkLoader.add_constructor(
-                STR_TAG, self.yaml_multiline_as_markdown_constructor
-            )
+            FrontmarkLoader.add_constructor(STR_TAG, self.yaml_multiline_as_markdown_constructor)
         for _, pair in frontmark_yaml_register.send(self):
             if not len(pair) == 2:
-                log.warning(
-                    "Ignoring YAML type (%s), expected a (tag, handler) tuple", pair
-                )
+                log.warning("Ignoring YAML type (%s), expected a (tag, handler) tuple", pair)
                 continue
             tag, constructor = pair
             FrontmarkLoader.add_constructor(tag, constructor)

@@ -1,0 +1,73 @@
+name: 🚀 Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      increment:
+        type: choice
+        description: Kind of increment (optional)
+        options:
+          - ''
+          - MAJOR
+          - MINOR
+          - PATCH
+        default: ''
+        required: false
+
+jobs:
+  release:
+    name: Bump version and create changelog with commitizen
+    runs-on: ubuntu-latest
+    # IMPORTANT: both environment and the id-token permission are mandatory for trusted publishing
+    environment: release
+    permissions:
+      id-token: write
+    steps:
+      - name: Ensures ref to release has passed CI
+        uses: noirbizarre/need-checks@0.1
+        with:
+          token: ${{ secrets.PAT }}
+          workflow: ci.yml
+
+      - name: Clone
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.PAT }}
+
+      - name: Set up PDM
+        uses: pdm-project/setup-pdm@v4
+        with:
+          cache: true
+
+      - name: Bump using commitizen
+        uses: commitizen-tools/commitizen-action@0.23.1
+        with:
+          github_token: ${{ secrets.PAT }}
+          changelog_increment_filename: body.md
+          extra_requirements: emotional
+          git_redirect_stderr: true
+          increment: ${{ github.event.inputs.increment }}
+
+      - name: Build artifacts
+        run: pdm build
+
+      - name: Publish on PyPI
+        run: pdm publish --no-build
+
+      - name: Github Release
+        id: github-release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: "body.md"
+          tag_name: ${{ env.REVISION }}
+          files: dist/*
+          token: ${{ secrets.PAT }}
+
+      - name: Publish summary
+        run: |
+          cat body.md >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Artifacts" >> $GITHUB_STEP_SUMMARY
+          echo "- GitHub release: ${{ steps.github-release.outputs.url }}" >> $GITHUB_STEP_SUMMARY
+          echo "- PyPI release: https://pypi.org/project/pelican-frontmark/${REVISION}/" >> $GITHUB_STEP_SUMMARY

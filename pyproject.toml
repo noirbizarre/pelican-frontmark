@@ -6,15 +6,15 @@ authors = [
 ]
 license = {text = "MIT"}
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.9"
 dependencies = [
     "pelican<5.0,>=4.0",
     "PyYAML",
     "commonmark",
 ]
 name = "pelican-frontmark"
-version = "1.2.2.dev"
 description = "CommonMark/Frontmatter reader for Pelican"
+dynamic = ["version"]
 
 keywords = ["pelican", "markdown", "frontmatter", "commonmark", "yaml"]
 classifiers = [
@@ -27,36 +27,31 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: System :: Software Distribution",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
-
 [project.urls]
 Homepage = "https://github.com/noirbizarre/pelican-frontmark"
 
-
 [project.optional-dependencies]
-[build-system]
-requires = ["pdm-pep517>=1.0.0"]
-build-backend = "pdm.pep517.api"
 
 
-[tool.pdm.build]
-includes = [
-    "pelican/plugins/frontmark"
+[dependency-groups]
+dev = [
+    {include-group = "test"},
+    {include-group = "lint"},
+    "tox>=4.22",
+    "emotional",
 ]
-
-
-[tool.pdm.dev-dependencies]
 lint = [
     "absolufy-imports",
-    "black",
+    "codespell>=2.3.0",
     "mypy",
     "ruff",
     "types-PyYAML",
@@ -70,6 +65,27 @@ test = [
     "pytest-sugar",
 ]
 
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+
+[tool.pdm]
+distribution = true
+plugins = [
+    "sync-pre-commit-lock>=0.7.0",
+]
+
+[tool.pdm.version]
+source = "scm"
+write_to = "pelican/plugins/frontmark/VERSION"
+
+[tool.pdm.build]
+includes = [
+    "pelican/plugins/frontmark"
+]
+
 [tool.pdm.scripts]
 lint.help = "Lint all tracked files using pre-commit"
 lint.cmd = "pre-commit run --all-files"
@@ -77,38 +93,60 @@ lint.cmd = "pre-commit run --all-files"
 test.help = "Run all tests"
 test.cmd = "pytest"
 
+"test:all".help = "Run the test suite against all supported versions"
+"test:all".cmd = "tox --parallel"
+
+format.help = "Format the code according to known rules"
+format.composite = [
+    "codespell --write-changes --interactive 2",
+    # See: https://docs.astral.sh/ruff/formatter/#sorting-imports
+    "ruff check --select I --fix-only --show-fixes pelican/plugins/frontmark tests",
+    "ruff format pelican/plugins/frontmark tests"
+]
+
+typing.help = "Full typing linting (includes imported packages and uncommmited files)"
+typing.cmd = "mypy pelican/plugins/frontmark tests --warn-unused-ignores"
+
 cover.help = "Run the test suite with coverage"
 cover.composite = [
-  """
-  test
+    """
+    test
     --cov=pelican/plugins/frontmark
     --cov-report=term
     --cov-report=html:reports/coverage
     --cov-report=xml:reports/coverage.xml
     --junitxml=reports/tests.xml
-  """
+    """
+]
+
+"update:all".help = "Update all dependencies (keep consistency, accept pdm update parameters)"
+"update:all".composite = [
+    "pre-commit autoupdate",
+    "{pdm} update {args}",
+    "{pdm} format",
 ]
 
 
-[tool.isort]
-# Maintain compatibility with Black
-profile = "black"
-multi_line_output = 3
+[tool.commitizen]
+name = "emotional"
+github = "noirbizarre/pelican-frontmark"
+order_by_scope = true
+version_provider = "scm"
+update_changelog_on_bump = true
+changelog_merge_prerelease = true
 
-# Sort imports within their section independent of the import type
-force_sort_within_sections = true
 
-# Designate "pelican" as separate import section
-known_pelican = "pelican"
-sections = "FUTURE,STDLIB,THIRDPARTY,PELICAN,FIRSTPARTY,LOCALFOLDER"
+[tool.codespell]
+ignore-words=".codespellignore"
+skip = "./reports,*.lock,CHANGELOG.md"
 
 
 [tool.pytest.ini_options]
 addopts = "-ra"
 norecursedirs = ".git build dist"
 testpaths = [
-  "pelican/plugins/frontmark/",
-  "tests/",
+    "pelican/plugins/frontmark/",
+    "tests/",
 ]
 
 
@@ -116,33 +154,50 @@ testpaths = [
 source = ["pelican/plugins/frontmark/"]
 branch = true
 omit = [
-  "tests/*",
+    "tests/*",
 ]
 
 [tool.ruff]
 line-length = 100
-fix = true
+respect-gitignore = true
+show-fixes = true
+src = [
+    "pelican/plugins/frontmark",
+    "tests",
+]
+
+[tool.ruff.lint]
 select = [
     # Pyflakes
     "F",
     # Pycodestyle
     "E",
     "W",
+    # McCabe # fake8-comprehension
+    "C",
+    # Pyupgrade
+    "UP",
     # isort
     "I001"
 ]
-src = [
-    "pelican/plugins/frontmark",
-    "tests",
-]
 
-[tool.ruff.isort]
-known-third-party = [
-    "pelican",
-    "pytest",
-]
+[tool.ruff.lint.isort]
+known-first-party = ["pelican"]
+known-third-party = ["pytest"]
+lines-between-types = 1
+
 
 [tool.mypy]
 explicit_package_bases = true
 namespace_packages = true
 ignore_missing_imports = true
+
+
+[tool.tox]
+requires = ["tox>=4.22"]
+env_list = ["3.9", "3.10", "3.11", "3.12", "3.13"]
+
+[tool.tox.env_run_base]
+description = "Run tests suite against Python {base_python}"
+dependency_groups = ["test"]
+commands = [["pytest"]]

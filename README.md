@@ -1,20 +1,19 @@
 # Pelican FrontMark
 
-[![CI](https://github.com/noirbizarre/pelican-frontmark/actions/workflows/ci.yml/badge.svg)](https://github.com/noirbizarre/pelican-frontmark/actions/workflows/ci.yml)
-[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/noirbizarre/pelican-frontmark/main.svg)](https://results.pre-commit.ci/latest/github/noirbizarre/pelican-frontmark/main)
-[![codecov](https://codecov.io/gh/noirbizarre/pelican-frontmark/branch/main/graph/badge.svg?token=CQBWEzzG4w)](https://codecov.io/gh/noirbizarre/pelican-frontmark)
-[![License][license-badge]][license-badge-url]
-[![Format][format-badge]][format-badge-url]
-[![Supported versions][python-version-badge]][python-version-badge-url]
+[![CI][ci-badge]][ci-url]
+[![pre-commit.ci status][pre-commit-badge]][pre-commit-url]
+[![codecov][codecov-badge]][codecov-url]
+[![License][license-badge]][pypi-url]
+[![Format][format-badge]][pypi-url]
+[![Supported versions][python-version-badge]][pypi-url]
 
 A Pelican CommonMark/Front Matter reader.
 
 This reader marse Markdown files with YAML frontmatter headers and formatted using the CommonMark specifications.
 
-
 ## Requirements
 
-Pelican FrontMark works with Pelican 4+ and Python 3.7+
+Pelican FrontMark works with Pelican 4+ and Python 3.9+
 
 ## Getting started
 
@@ -92,7 +91,6 @@ FRONTMARK_PYGMENTS = {
   Can be set to `True` to force Pygments usage with default parameters or a `dict` of
   [Pygments parameters][pygments-options]
 
-
 ### Registering custom YAML types
 
 You can register custom YAML types using the `frontmark_yaml_register` signal:
@@ -119,6 +117,8 @@ To test the plugin against all supported Python versions, run tox:
 
 ```shell
 tox
+# or
+pdm test:all
 ```
 
 To test only within your current Python version with pytest:
@@ -128,11 +128,16 @@ pdm sync -G:all  # Install with test dependencies
 pdm test  # Launch pytest test suite
 ```
 
+<!-- Known URLs -->
+[pypi-url]: https://pypi.org/project/pelican-frontmark/
+[ci-url]: https://github.com/noirbizarre/pelican-frontmark/actions/workflows/ci.yml
+[codecov-url]: https://codecov.io/gh/noirbizarre/pelican-frontmark
+[pre-commit-url]: https://results.pre-commit.ci/latest/github/noirbizarre/pelican-frontmark/main
 
+[ci-badge]: https://github.com/noirbizarre/pelican-frontmark/actions/workflows/ci.yml/badge.svg
+[pre-commit-badge]: https://results.pre-commit.ci/badge/github/noirbizarre/pelican-frontmark/main.svg
+[codecov-badge]: https://codecov.io/gh/noirbizarre/pelican-frontmark/branch/main/graph/badge.svg?token=CQBWEzzG4w
 [license-badge]: https://img.shields.io/pypi/l/pelican-frontmark.svg
-[license-badge-url]: https://pypi.python.org/pypi/pelican-frontmark
 [format-badge]: https://img.shields.io/pypi/format/pelican-frontmark.svg
-[format-badge-url]: https://pypi.python.org/pypi/pelican-frontmark
 [python-version-badge]: https://img.shields.io/pypi/pyversions/pelican-frontmark.svg
-[python-version-badge-url]: https://pypi.python.org/pypi/pelican-frontmark
 [pygments-options]: http://docs.getpelican.com/en/stable/content.html#internal-pygments-options

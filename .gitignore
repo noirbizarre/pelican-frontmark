@@ -23,6 +23,7 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
+VERSION
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -70,4 +71,4 @@ target/
 .ruff_cache
 
 # PDM
-.pdm.toml
+.pdm-python

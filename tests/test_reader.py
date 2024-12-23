@@ -1,11 +1,12 @@
 import os
 
+from pyquery import PyQuery as pq
+
 from pelican import Pelican, readers
 from pelican.plugins.frontmark.reader import FrontmarkReader
 from pelican.plugins.frontmark.signals import frontmark_yaml_register
 from pelican.settings import DEFAULT_CONFIG
 from pelican.utils import SafeDatetime
-from pyquery import PyQuery as pq
 
 TEST_DIR = os.path.dirname(__file__)
 DATA_PATH = os.path.join(TEST_DIR, "data")
@@ -132,7 +133,7 @@ def test_syntax_highlighting_pygments_options():
 
 
 def test_syntax_highlighting_pygments_unknown_language():
-    """Pygments should not fail on unkown language"""
+    """Pygments should not fail on unknown language"""
     content, _ = read_content_metadata("highlight-unknown.md", FRONTMARK_PYGMENTS=True)
     div = pq(content)
     assert div.length == 1

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pelican.plugins.signals import readers_init
 
 from .__about__ import __description__, __version__  # noqa

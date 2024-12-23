@@ -1,45 +1,33 @@
-name: CI
+name: 👮 CI
 
 on:
   pull_request:
-    paths-ignore:
-      - "*.md"
   push:
     branches:
       - main
-    paths-ignore:
-      - "*.md"
+  workflow_dispatch:
 
 jobs:
   tests:
-    name: Tests
+    name: 🧪 Tests
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version:
-          - "3.7"
-          - "3.8"
-          - "3.9"
-          - "3.10"
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
     steps:
-      - name: Clone
-        uses: actions/checkout@v3
-
-      - name: Set up Python and PDM
-        uses: pdm-project/setup-pdm@v3
+      - uses: actions/checkout@v4
+      - name: Set up PDM
+        uses: pdm-project/setup-pdm@v4
         with:
           python-version: ${{ matrix.python-version }}
-          cache: true
 
       - name: Install dependencies
-        run: pdm sync -G test
+        run: pdm sync -d -G test
 
       - name: Run Tests
         run: pdm run cover -v --force-sugar --color=yes
 
-      - uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: reports/coverage.xml
-          flags: unittests
-          name: Python ${{ matrix.python-version }}
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

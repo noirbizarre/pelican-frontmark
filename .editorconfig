@@ -9,11 +9,18 @@ trim_trailing_whitespace = true
 insert_final_newline = true
 
 [*.py]
-max_line_length = 120
+max_line_length = 100
 
 [*.md]
 indent_size = 2
 trim_trailing_whitespace = false
 
-[**/*.{json,yaml,yml}]
+[*.{yml,yaml,toml}]
+indent_size = 2
+
+[pyproject.toml]
+# Hardcoded by most tool
+indent_size = 4
+
+[*.{js,css}]
 indent_size = 2
